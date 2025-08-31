@@ -8,7 +8,13 @@ import {
   ListToolsRequestSchema,
   McpError,
 } from '@modelcontextprotocol/sdk/types.js'
-import { getCurrentWeather, getWeatherForecast } from './weather.js'
+import {
+  getCurrentWeather,
+  getWeatherForecast,
+  getCurrentWeatherByLocation,
+  getWeatherForecastByLocation,
+} from './weather.js'
+import { searchLocations, formatSearchResults } from './geocoding.js'
 
 // Create the MCP server
 const server = new Server(
@@ -29,8 +35,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     tools: [
       {
         name: 'get_current_weather',
-        description:
-          'Get current weather conditions for any location worldwide using the Open-Meteo API',
+        description: 'Get current weather conditions using coordinates',
         inputSchema: {
           type: 'object',
           properties: {
@@ -48,7 +53,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: 'get_weather_forecast',
-        description: 'Get a 3-day weather forecast for any location worldwide',
+        description: 'Get a 3-day weather forecast using coordinates',
         inputSchema: {
           type: 'object',
           properties: {
@@ -64,6 +69,53 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: ['latitude', 'longitude'],
         },
       },
+      {
+        name: 'get_current_weather_by_location',
+        description:
+          'Get current weather conditions using location name or coordinates',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            location: {
+              type: 'string',
+              description:
+                'Location name (e.g., "New York", "London, UK", "Tokyo, Japan") or coordinates as "latitude,longitude"',
+            },
+          },
+          required: ['location'],
+        },
+      },
+      {
+        name: 'get_weather_forecast_by_location',
+        description:
+          'Get a 3-day weather forecast using location name or coordinates',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            location: {
+              type: 'string',
+              description:
+                'Location name (e.g., "New York", "London, UK", "Tokyo, Japan") or coordinates as "latitude,longitude"',
+            },
+          },
+          required: ['location'],
+        },
+      },
+      {
+        name: 'search_locations',
+        description:
+          'Search for locations by name to get coordinates and location details',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            query: {
+              type: 'string',
+              description: 'Location search query (city, region, country)',
+            },
+          },
+          required: ['query'],
+        },
+      },
     ],
   }
 })
@@ -73,24 +125,21 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params
 
   try {
-    // Check if args exists
     if (!args) {
       throw new Error('No arguments provided')
     }
 
     switch (name) {
       case 'get_current_weather': {
-        // More robust coordinate parsing
+        // Original coordinate-based function
         const rawLat = args.latitude
         const rawLng = args.longitude
 
-        // Convert to numbers if they're strings
         const latitude =
           typeof rawLat === 'string' ? parseFloat(rawLat) : Number(rawLat)
         const longitude =
           typeof rawLng === 'string' ? parseFloat(rawLng) : Number(rawLng)
 
-        // Validate coordinates
         if (isNaN(latitude) || isNaN(longitude)) {
           throw new Error(
             `Invalid coordinates: latitude=${rawLat}, longitude=${rawLng}`
@@ -109,17 +158,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         const weather = await getCurrentWeather(latitude, longitude)
         return {
-          content: [
-            {
-              type: 'text',
-              text: weather,
-            },
-          ],
+          content: [{ type: 'text', text: weather }],
         }
       }
 
       case 'get_weather_forecast': {
-        // Same robust parsing for forecast
+        // Original coordinate-based function
         const rawLat = args.latitude
         const rawLng = args.longitude
 
@@ -146,12 +190,50 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         const forecast = await getWeatherForecast(latitude, longitude)
         return {
-          content: [
-            {
-              type: 'text',
-              text: forecast,
-            },
-          ],
+          content: [{ type: 'text', text: forecast }],
+        }
+      }
+
+      case 'get_current_weather_by_location': {
+        // New location-based function
+        const location = args.location
+
+        if (typeof location !== 'string' || location.trim().length === 0) {
+          throw new Error('Location must be a non-empty string')
+        }
+
+        const weather = await getCurrentWeatherByLocation(location.trim())
+        return {
+          content: [{ type: 'text', text: weather }],
+        }
+      }
+
+      case 'get_weather_forecast_by_location': {
+        // New location-based forecast function
+        const location = args.location
+
+        if (typeof location !== 'string' || location.trim().length === 0) {
+          throw new Error('Location must be a non-empty string')
+        }
+
+        const forecast = await getWeatherForecastByLocation(location.trim())
+        return {
+          content: [{ type: 'text', text: forecast }],
+        }
+      }
+
+      case 'search_locations': {
+        // Location search function
+        const query = args.query
+
+        if (typeof query !== 'string' || query.trim().length === 0) {
+          throw new Error('Search query must be a non-empty string')
+        }
+
+        const results = await searchLocations(query.trim())
+        const formattedResults = formatSearchResults(results)
+        return {
+          content: [{ type: 'text', text: formattedResults }],
         }
       }
 
@@ -161,7 +243,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error occurred'
-    console.error(`🔍 DEBUG: Tool execution error:`, error)
     throw new McpError(
       ErrorCode.InternalError,
       `Tool execution failed: ${errorMessage}`
