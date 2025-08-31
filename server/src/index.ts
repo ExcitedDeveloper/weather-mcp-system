@@ -15,6 +15,7 @@ import {
   getWeatherForecastByLocation,
 } from './weather.js'
 import { searchLocations, formatSearchResults } from './geocoding.js'
+import { type TemperatureUnit } from './utils.js'
 
 // Create the MCP server
 const server = new Server(
@@ -47,6 +48,12 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               type: 'number',
               description: 'Longitude coordinate (-180 to 180)',
             },
+            temperature_unit: {
+              type: 'string',
+              enum: ['fahrenheit', 'celsius'],
+              description: 'Temperature unit preference (default: fahrenheit)',
+              default: 'fahrenheit',
+            },
           },
           required: ['latitude', 'longitude'],
         },
@@ -65,6 +72,12 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               type: 'number',
               description: 'Longitude coordinate (-180 to 180)',
             },
+            temperature_unit: {
+              type: 'string',
+              enum: ['fahrenheit', 'celsius'],
+              description: 'Temperature unit preference (default: fahrenheit)',
+              default: 'fahrenheit',
+            },
           },
           required: ['latitude', 'longitude'],
         },
@@ -79,7 +92,13 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             location: {
               type: 'string',
               description:
-                'Location name (e.g., "New York", "London, UK", "Tokyo, Japan") or coordinates as "latitude,longitude"',
+                'Location name (e.g., "New York", "London, UK") or coordinates as "latitude,longitude"',
+            },
+            temperature_unit: {
+              type: 'string',
+              enum: ['fahrenheit', 'celsius'],
+              description: 'Temperature unit preference (default: fahrenheit)',
+              default: 'fahrenheit',
             },
           },
           required: ['location'],
@@ -95,7 +114,13 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             location: {
               type: 'string',
               description:
-                'Location name (e.g., "New York", "London, UK", "Tokyo, Japan") or coordinates as "latitude,longitude"',
+                'Location name (e.g., "New York", "London, UK") or coordinates as "latitude,longitude"',
+            },
+            temperature_unit: {
+              type: 'string',
+              enum: ['fahrenheit', 'celsius'],
+              description: 'Temperature unit preference (default: fahrenheit)',
+              default: 'fahrenheit',
             },
           },
           required: ['location'],
@@ -131,9 +156,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     switch (name) {
       case 'get_current_weather': {
-        // Original coordinate-based function
         const rawLat = args.latitude
         const rawLng = args.longitude
+        const temperatureUnit = (args.temperature_unit ||
+          'fahrenheit') as TemperatureUnit
 
         const latitude =
           typeof rawLat === 'string' ? parseFloat(rawLat) : Number(rawLat)
@@ -156,16 +182,21 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           )
         }
 
-        const weather = await getCurrentWeather(latitude, longitude)
+        const weather = await getCurrentWeather(
+          latitude,
+          longitude,
+          temperatureUnit
+        )
         return {
           content: [{ type: 'text', text: weather }],
         }
       }
 
       case 'get_weather_forecast': {
-        // Original coordinate-based function
         const rawLat = args.latitude
         const rawLng = args.longitude
+        const temperatureUnit = (args.temperature_unit ||
+          'fahrenheit') as TemperatureUnit
 
         const latitude =
           typeof rawLat === 'string' ? parseFloat(rawLat) : Number(rawLat)
@@ -188,42 +219,53 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           )
         }
 
-        const forecast = await getWeatherForecast(latitude, longitude)
+        const forecast = await getWeatherForecast(
+          latitude,
+          longitude,
+          temperatureUnit
+        )
         return {
           content: [{ type: 'text', text: forecast }],
         }
       }
 
       case 'get_current_weather_by_location': {
-        // New location-based function
         const location = args.location
+        const temperatureUnit = (args.temperature_unit ||
+          'fahrenheit') as TemperatureUnit
 
         if (typeof location !== 'string' || location.trim().length === 0) {
           throw new Error('Location must be a non-empty string')
         }
 
-        const weather = await getCurrentWeatherByLocation(location.trim())
+        const weather = await getCurrentWeatherByLocation(
+          location.trim(),
+          temperatureUnit
+        )
         return {
           content: [{ type: 'text', text: weather }],
         }
       }
 
       case 'get_weather_forecast_by_location': {
-        // New location-based forecast function
         const location = args.location
+        const temperatureUnit = (args.temperature_unit ||
+          'fahrenheit') as TemperatureUnit
 
         if (typeof location !== 'string' || location.trim().length === 0) {
           throw new Error('Location must be a non-empty string')
         }
 
-        const forecast = await getWeatherForecastByLocation(location.trim())
+        const forecast = await getWeatherForecastByLocation(
+          location.trim(),
+          temperatureUnit
+        )
         return {
           content: [{ type: 'text', text: forecast }],
         }
       }
 
       case 'search_locations': {
-        // Location search function
         const query = args.query
 
         if (typeof query !== 'string' || query.trim().length === 0) {
