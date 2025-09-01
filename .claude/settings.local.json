@@ -15,7 +15,8 @@
       "Bash(npm run test:coverage:*)",
       "Bash(npm run test:*)",
       "Bash(npm test)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
