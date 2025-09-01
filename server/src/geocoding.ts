@@ -1,3 +1,5 @@
+import { normalizeStateName, isValidUSState } from './utils.js'
+
 // Type definitions for geocoding responses
 export interface GeocodingResult {
   name: string
@@ -51,6 +53,43 @@ async function makeGeocodingRequest(url: string): Promise<any> {
   }
 }
 
+// Parse city/state format like "Miami, FL" or "Springfield, Illinois"
+function parseCityState(query: string): { city: string; state?: string; isUSQuery: boolean } {
+  const parts = query.split(',').map(part => part.trim())
+  
+  if (parts.length === 2) {
+    const [city, potentialState] = parts
+    
+    // Check if the second part is a valid US state
+    if (isValidUSState(potentialState)) {
+      return {
+        city,
+        state: normalizeStateName(potentialState),
+        isUSQuery: true
+      }
+    }
+  }
+  
+  // Not a US city/state format, return as-is
+  return {
+    city: query,
+    state: undefined,
+    isUSQuery: false
+  }
+}
+
+// Filter results by US state when specified
+function filterByUSState(results: GeocodingResult[], targetState: string): GeocodingResult[] {
+  return results.filter(result => {
+    // For US locations, admin1 should contain the state name
+    if (result.country_code === 'US' && result.admin1) {
+      const resultState = normalizeStateName(result.admin1)
+      return resultState === targetState
+    }
+    return false
+  })
+}
+
 // Search for locations by name
 export async function searchLocations(
   query: string
@@ -59,8 +98,14 @@ export async function searchLocations(
     throw new Error('Search query cannot be empty')
   }
 
+  // Parse the query to check for US city/state format
+  const { city, state, isUSQuery } = parseCityState(query.trim())
+  
+  // For US city/state queries, search for just the city name to get all matches
+  const searchTerm = isUSQuery ? city : query.trim()
+  
   const url = `${GEOCODING_API_BASE}/search?name=${encodeURIComponent(
-    query.trim()
+    searchTerm
   )}&count=10&language=en&format=json`
 
   const data: GeocodingResponse = await makeGeocodingRequest(url)
@@ -71,7 +116,22 @@ export async function searchLocations(
     )
   }
 
-  return data.results
+  let results = data.results
+
+  // If this is a US city/state query, filter results by state
+  if (isUSQuery && state) {
+    const filteredResults = filterByUSState(results, state)
+    
+    if (filteredResults.length === 0) {
+      throw new Error(
+        `No locations found for "${city}" in ${state}. Please check the spelling or try a different location.`
+      )
+    }
+    
+    results = filteredResults
+  }
+
+  return results
 }
 
 // Get the best matching location for a query
