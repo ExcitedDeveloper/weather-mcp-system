@@ -28,16 +28,30 @@ npx @modelcontextprotocol/inspector node dist/index.js
 
 ### Testing
 
+- **Automated Testing**: Vitest framework with unit and integration tests
+- **Test Structure**: Tests organized in `server/tests/` and `server/src/tests/`
 - **Manual Testing**: Use MCP Inspector for interactive testing of all tools
-- **Testing Commands**: No automated test framework currently - manual testing procedures documented in PRD.md
+- **Testing Commands**: 
+  ```bash
+  npm test          # Run all tests
+  npm run test:coverage  # Run tests with coverage report
+  npm run test:watch     # Run tests in watch mode
+  ```
 
 ## Architecture Overview
 
 ### MCP Server Structure (`server/src/`)
 
-- **`index.ts`**: Main server entry point with MCP protocol handling and tool definitions
+- **`index.ts`**: Main server entry point with MCP protocol handling
+- **`tools/index.ts`**: Tool handler definitions and request routing
+- **`schemas.ts`**: JSON schema definitions for all MCP tools
 - **`weather.ts`**: Weather data retrieval and formatting using Open-Meteo API
 - **`geocoding.ts`**: Location search and coordinate resolution with state filtering
+- **`api-client.ts`**: HTTP client with error handling for API requests
+- **`formatters.ts`**: Weather data formatting and display utilities
+- **`validation.ts`**: Input validation and sanitization logic
+- **`config.ts`**: API endpoints, constants, and configuration
+- **`types.ts`**: TypeScript interface definitions
 - **`utils.ts`**: Temperature conversion utilities (Fahrenheit/Celsius)
 
 ### Core MCP Tools
@@ -69,9 +83,16 @@ npx @modelcontextprotocol/inspector node dist/index.js
 ### Making Changes
 
 1. **Server Changes**: Edit files in `server/src/`, then run `npm run build` and test with MCP Inspector
-2. **Temperature Conversions**: Use existing utilities in `utils.ts` - don't implement new conversion logic
-3. **Location Handling**: Leverage `geocoding.ts` functions for parsing location inputs
-4. **Error Handling**: Follow existing patterns for API failures and input validation
+2. **Tool Development**: Add new tools by updating `tools/index.ts`, `schemas.ts`, and implementing handlers
+3. **Schema Changes**: Update tool schemas in `schemas.ts` for input validation
+4. **API Integration**: Use `api-client.ts` for external API calls with proper error handling
+5. **Temperature Conversions**: Use existing utilities in `utils.ts` - don't implement new conversion logic
+6. **Location Handling**: Leverage `geocoding.ts` functions for parsing location inputs
+7. **Validation**: Use `validation.ts` functions for input sanitization and validation
+8. **Configuration**: Add new constants and endpoints to `config.ts`
+9. **Type Safety**: Define interfaces in `types.ts` for new data structures
+10. **Formatting**: Use `formatters.ts` for consistent output formatting
+11. **Testing**: Write unit tests in `server/tests/unit/` and integration tests in `server/tests/integration/`
 
 ### Code Conventions
 
@@ -82,9 +103,16 @@ npx @modelcontextprotocol/inspector node dist/index.js
 
 ### Testing Approach
 
-- **Primary**: Manual testing with MCP Inspector
+- **Automated Tests**: Vitest test suites with unit and integration testing
+- **Test Coverage**: 80%+ code coverage requirement with comprehensive test suites
+- **Mock Testing**: API responses mocked in `server/tests/__mocks__/` for consistent results
+- **Manual Testing**: MCP Inspector for interactive testing and debugging
 - **Focus Areas**: Location search accuracy, temperature unit conversion, US state filtering
 - **Edge Cases**: Invalid locations, coordinate validation, API failures
+- **Test Structure**: 
+  - Unit tests in `server/tests/unit/` for individual modules
+  - Integration tests in `server/tests/integration/` for end-to-end functionality
+  - Test utilities in `server/tests/utils/` for shared test helpers
 
 ## Important Implementation Details
 
@@ -136,6 +164,25 @@ The system is designed for multi-transport deployment:
 - `@modelcontextprotocol/sdk`: Core MCP functionality
 - `typescript` & `tsx`: TypeScript compilation and development
 - Express dependencies (cors, express): For HTTP transport mode
+
+## Modular Architecture Benefits
+
+The codebase has been refactored into a highly modular architecture with clear separation of concerns:
+
+### Core Modules
+- **Tool System**: Handlers separated from schema definitions for maintainability
+- **API Layer**: Centralized HTTP client with comprehensive error handling
+- **Validation Layer**: Dedicated input validation and sanitization
+- **Configuration Management**: Centralized constants and API configuration
+- **Type System**: Comprehensive TypeScript interfaces for type safety
+- **Testing Infrastructure**: Organized test suites with mocks and utilities
+
+### Development Benefits
+- **Maintainability**: Each module has a single responsibility
+- **Testability**: Individual modules can be unit tested in isolation
+- **Extensibility**: New tools and features can be added easily
+- **Debugging**: Clear separation makes issues easier to locate and fix
+- **Code Reuse**: Shared utilities and types across modules
 
 ## Common Development Tasks
 

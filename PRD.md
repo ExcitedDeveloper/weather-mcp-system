@@ -136,10 +136,23 @@ weather-mcp-system/
 ├── server/                 # MCP server code
 │   ├── src/
 │   │   ├── index.ts        # Main server entry point
+│   │   ├── tools/
+│   │   │   └── index.ts    # Tool handler definitions and routing
+│   │   ├── schemas.ts      # JSON schema definitions for MCP tools
 │   │   ├── weather.ts      # Weather API integration
 │   │   ├── geocoding.ts    # Location search and geocoding
+│   │   ├── api-client.ts   # HTTP client with error handling
+│   │   ├── formatters.ts   # Weather data formatting utilities
+│   │   ├── validation.ts   # Input validation and sanitization
+│   │   ├── config.ts       # API endpoints and configuration
+│   │   ├── types.ts        # TypeScript interface definitions
 │   │   ├── utils.ts        # Temperature conversion utilities
-│   │   └── __tests__/      # Test files (if implemented)
+│   │   └── tests/          # Unit test files
+│   ├── tests/              # Test infrastructure
+│   │   ├── unit/           # Unit test suites
+│   │   ├── integration/    # Integration test suites
+│   │   ├── utils/          # Test utilities and helpers
+│   │   └── __mocks__/      # Mock implementations
 │   ├── dist/              # Compiled JavaScript
 │   ├── package.json
 │   ├── tsconfig.json
@@ -291,12 +304,19 @@ weather-mcp-system/
 - **Environment Detection**: Automatic transport selection based on NODE_ENV
 
 **Key Components:**
-- **Server Handler** - MCP protocol implementation
-- **API Client** - Open-Meteo integration with error handling
-- **Geocoding Engine** - Location name to coordinates conversion with US state filtering
-- **Temperature Conversion** - Fahrenheit/Celsius conversion utilities
+- **Server Handler** (`index.ts`) - MCP protocol implementation and server setup
+- **Tool Handlers** (`tools/index.ts`) - Individual tool request handlers with validation
+- **Schema Registry** (`schemas.ts`) - JSON schema definitions for all tools
+- **API Client** (`api-client.ts`) - HTTP client with comprehensive error handling
+- **Geocoding Engine** (`geocoding.ts`) - Location name to coordinates conversion with US state filtering
+- **Weather Service** (`weather.ts`) - Weather data retrieval and processing
+- **Validation Layer** (`validation.ts`) - Input validation and sanitization
+- **Configuration Management** (`config.ts`) - Centralized API configuration and constants
+- **Type System** (`types.ts`) - Comprehensive TypeScript interfaces
+- **Formatters** (`formatters.ts`) - Human-readable weather report generation
+- **Utilities** (`utils.ts`) - Temperature conversion and helper functions
+- **Testing Infrastructure** (`tests/`) - Unit and integration test suites
 - **Recommendation Engine** - Weather-to-advice logic (planned)
-- **Response Formatter** - Human-readable output generation
 
 ---
 
@@ -304,13 +324,31 @@ weather-mcp-system/
 
 ### 2.1 Testing Strategy
 
+**Automated Testing Framework:**
+- **Test Framework**: Vitest with comprehensive unit and integration tests
+- **Test Structure**: Organized in `server/src/tests/` and `server/tests/` directories  
+- **Test Coverage**: 80%+ code coverage requirement with comprehensive test suites
+- **Mock Testing**: API responses mocked for consistent test results in `server/tests/__mocks__/`
+- **Unit Tests**: Individual module testing in `server/tests/unit/`
+- **Integration Tests**: End-to-end tool testing in `server/tests/integration/`
+- **Test Utilities**: Shared test helpers in `server/tests/utils/`
+- **CI/CD Integration**: GitHub Actions running full test suite on commits
+
 **Manual Testing Approach:**
 - **MCP Inspector**: Official testing tool from Anthropic for interactive testing
 - **Comprehensive Test Cases**: Covering all tools, location formats, and error scenarios
 - **Temperature Unit Testing**: Verification of Fahrenheit/Celsius conversion
 - **State Filtering Testing**: Precise US city/state matching
+- **Disambiguation Testing**: Location ambiguity detection and error handling
 
 ### 2.2 Test Categories & Scenarios
+
+**Location Disambiguation Testing:** 🆕
+- **Ambiguous Detection**: "Spring Hill" → Error with FL/TN/KS alternatives
+- **International Ambiguity**: "Cambridge" → Error with UK/MA alternatives  
+- **Clear Queries**: "Miami, FL" → Single result (no ambiguity)
+- **Error Message Quality**: Helpful guidance with search_locations suggestion
+- **State Filtering**: Multiple results in same state → No ambiguity
 
 **Location Search Testing:**
 - Ambiguous locations (Springfield, Paris, London)
