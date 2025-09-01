@@ -1,5 +1,4 @@
-// Temperature conversion utilities
-export type TemperatureUnit = 'fahrenheit' | 'celsius'
+import { type TemperatureUnit } from './types.js'
 
 export function convertTemperature(
   celsius: number,
@@ -8,7 +7,7 @@ export function convertTemperature(
   if (unit === 'fahrenheit') {
     return Math.round((celsius * 9) / 5 + 32)
   }
-  return Math.round(celsius * 10) / 10 // Round celsius to 1 decimal
+  return Math.round(celsius * 10) / 10
 }
 
 export function getTemperatureUnit(unit: TemperatureUnit): string {
@@ -17,6 +16,12 @@ export function getTemperatureUnit(unit: TemperatureUnit): string {
 
 export function getTemperatureLabel(unit: TemperatureUnit): string {
   return unit === 'fahrenheit' ? 'Fahrenheit' : 'Celsius'
+}
+
+export function formatTemperature(celsius: number, unit: TemperatureUnit): string {
+  const converted = convertTemperature(celsius, unit)
+  const unitSymbol = getTemperatureUnit(unit)
+  return `${converted}${unitSymbol}`
 }
 
 // US State abbreviation to full name mapping
