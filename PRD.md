@@ -756,27 +756,122 @@ interface AppState {
 
 ### Manual Test Cases
 
-#### **Location Search Tests**
-- ✅ `{"query": "Paris"}` - Multiple Paris locations returned
-- 🟡 `{"query": "Miami, FL"}` - Should return ONLY Miami, Florida (filtering implementation in progress)
+#### **1. US City/State Format Testing (Critical for Issue #3)**
+
+**Major City/State Combinations:**
+- ⏳ `{"location": "Chicago, IL"}` - Second largest US city, test Illinois filtering
+- ⏳ `{"location": "Houston, TX"}` - Large Texas city, test abbreviation handling
+- ⏳ `{"location": "Phoenix, AZ"}` - Hot climate city, good for temperature testing
+- ⏳ `{"location": "Philadelphia, PA"}` - Historical city, test Pennsylvania filtering
+- ⏳ `{"location": "San Antonio, TX"}` - Multiple Texas cities to test
+- ⏳ `{"location": "San Diego, CA"}` - California coastal city
+- ⏳ `{"location": "Dallas, TX"}` - Another major Texas city
+- ⏳ `{"location": "San Jose, CA"}` - Silicon Valley location
+
+**Ambiguous City Names (State Filtering Critical):**
+- ⏳ `{"location": "Springfield, IL"}` vs `{"location": "Springfield, MO"}` vs `{"location": "Springfield, MA"}` - Most common US city name
+- ⏳ `{"location": "Portland, OR"}` vs `{"location": "Portland, ME"}` - Major coast-to-coast disambiguation
+- ⏳ `{"location": "Columbus, OH"}` vs `{"location": "Columbus, GA"}` vs `{"location": "Columbus, IN"}` - Multiple Columbus cities
+- ⏳ `{"location": "Kansas City, MO"}` vs `{"location": "Kansas City, KS"}` - Border city spanning states
+- ⏳ `{"location": "Richmond, VA"}` vs `{"location": "Richmond, CA"}` - Capital vs Bay Area
+- ⏳ `{"location": "Cambridge, MA"}` vs `{"location": "Cambridge, MD"}` - University towns
+- ⏳ `{"location": "Franklin, TN"}` vs `{"location": "Franklin, OH"}` vs `{"location": "Franklin, MA"}` - Common town name
+
+**Special Cases:**
+- ⏳ `{"location": "Washington, DC"}` - District of Columbia handling
+- ⏳ `{"location": "Las Vegas, NV"}` - Entertainment capital
+- ⏳ `{"location": "New Orleans, LA"}` - Unique Louisiana city
+- ⏳ `{"location": "Salt Lake City, UT"}` - Multi-word city name
+
+#### **2. State Format Variations**
+
+**Abbreviation vs Full Name:**
+- ⏳ `{"location": "Austin, TX"}` vs `{"location": "Austin, Texas"}`
+- ⏳ `{"location": "Denver, CO"}` vs `{"location": "Denver, Colorado"}`
+- ⏳ `{"location": "Boston, MA"}` vs `{"location": "Boston, Massachusetts"}`
+- ⏳ `{"location": "Seattle, WA"}` vs `{"location": "Seattle, Washington"}`
+- ⏳ `{"location": "Nashville, TN"}` vs `{"location": "Nashville, Tennessee"}`
+
+#### **3. International Locations (Conflict Testing)**
+
+**Cities with US Namesakes:**
+- ⏳ `{"location": "London, England"}` vs `{"location": "London, Kentucky"}`
+- ⏳ `{"location": "Paris, France"}` vs `{"location": "Paris, Texas"}`
+- ⏳ `{"location": "Berlin, Germany"}` vs `{"location": "Berlin, Connecticut"}`
+- ⏳ `{"location": "Rome, Italy"}` vs `{"location": "Rome, Georgia"}`
+- ⏳ `{"location": "Athens, Greece"}` vs `{"location": "Athens, Ohio"}`
+- ⏳ `{"location": "Manchester, England"}` vs `{"location": "Manchester, New Hampshire"}`
+- ⏳ `{"location": "Birmingham, England"}` vs `{"location": "Birmingham, Alabama"}`
+
+**Major International Cities:**
+- ⏳ `{"location": "Tokyo, Japan"}` - Asian megacity
+- ⏳ `{"location": "Sydney, Australia"}` - Southern hemisphere
+- ⏳ `{"location": "Toronto, Canada"}` - North American neighbor
+- ⏳ `{"location": "Mexico City, Mexico"}` - Spanish language
+- ⏳ `{"location": "São Paulo, Brazil"}` - Portuguese with special characters
+- ⏳ `{"location": "Mumbai, India"}` - South Asian major city
+- ⏳ `{"location": "Lagos, Nigeria"}` - African major city
+- ⏳ `{"location": "Moscow, Russia"}` - Cyrillic alphabet city
+
+#### **4. Coordinate Input Testing**
+
+**Major US City Coordinates:**
+- ⏳ `{"location": "40.7128,-74.0060"}` - New York City coordinates
+- ⏳ `{"location": "34.0522,-118.2437"}` - Los Angeles coordinates
+- ⏳ `{"location": "41.8781,-87.6298"}` - Chicago coordinates
+- ⏳ `{"location": "29.7604,-95.3698"}` - Houston coordinates
+- ⏳ `{"location": "33.4484,-112.0740"}` - Phoenix coordinates
+
+**International Coordinates:**
+- ⏳ `{"location": "51.5074,-0.1278"}` - London coordinates
+- ⏳ `{"location": "48.8566,2.3522"}` - Paris coordinates
+- ⏳ `{"location": "35.6762,139.6503"}` - Tokyo coordinates
+- ⏳ `{"location": "-33.8688,151.2093"}` - Sydney coordinates
+
+#### **5. Edge Cases & Error Handling**
+
+**Invalid Inputs:**
+- ⏳ `{"location": ""}` - Empty string
+- ⏳ `{"location": "Fakecity, FL"}` - Non-existent city
+- ⏳ `{"location": "Miami FL"}` - Missing comma in city/state format
+- ⏳ `{"location": "200,-400"}` - Invalid coordinates
+- ⏳ `{"location": "Miami, ZZ"}` - Invalid state code
+- ⏳ `{"location": "XYZ123Invalid"}` - Gibberish input
+
+**Boundary Coordinates:**
+- ⏳ `{"location": "90,180"}` - North Pole, Date Line
+- ⏳ `{"location": "-90,-180"}` - South Pole, Date Line
+- ⏳ `{"location": "0,0"}` - Equator/Prime Meridian intersection
+
+#### **6. Temperature Unit Testing by Climate**
+
+**Hot Climate Cities:**
+- ⏳ `{"location": "Phoenix, AZ"}` - Default Fahrenheit
+- ⏳ `{"location": "Phoenix, AZ", "temperature_unit": "celsius"}` - Desert heat in Celsius
+- ⏳ `{"location": "Miami, FL", "temperature_unit": "fahrenheit"}` - Tropical heat in Fahrenheit
+- ⏳ `{"location": "Las Vegas, NV", "temperature_unit": "celsius"}` - Dry heat in Celsius
+
+**Cold Climate Cities:**
+- ⏳ `{"location": "Anchorage, AK"}` - Arctic conditions default Fahrenheit
+- ⏳ `{"location": "Anchorage, AK", "temperature_unit": "celsius"}` - Arctic in Celsius
+- ⏳ `{"location": "Minneapolis, MN", "temperature_unit": "fahrenheit"}` - Continental cold
+- ⏳ `{"location": "Buffalo, NY", "temperature_unit": "celsius"}` - Great Lakes snow belt
+
+**Moderate Climate Cities:**
+- ⏳ `{"location": "San Francisco, CA"}` - Mediterranean climate
+- ⏳ `{"location": "Seattle, WA", "temperature_unit": "celsius"}` - Temperate oceanic
+
+#### **7. Backwards Compatibility Tests**
+- ⏳ `{"latitude": 25.7617, "longitude": -80.1918}` - Original coordinate-only tools
+- ⏳ `{"latitude": 40.7128, "longitude": -74.0060}` - NYC via original coordinate tools
+- ⏳ All coordinate-based tools should remain functional
+
+#### **8. Location Search Tool Tests**
+- ⏳ `{"query": "Paris"}` - Should return multiple Paris locations (France, Texas, etc.)
+- 🟡 `{"query": "Miami, FL"}` - Should return ONLY Miami, Florida
 - ⏳ `{"query": "Springfield, IL"}` - Should return ONLY Springfield, Illinois
+- ⏳ `{"query": "Springfield"}` - Should return multiple Springfield cities
 - ⏳ `{"query": ""}` - Empty query error handling
-
-#### **Weather by Location Tests**
-- ✅ `{"location": "New York"}` - NYC weather with location name
-- ✅ `{"location": "Miami"}` - Miami weather successful
-- 🟡 `{"location": "Miami, FL"}` - Testing US city/state format
-- ⏳ `{"location": "Tokyo, Japan"}` - International location test
-- ⏳ `{"location": "XYZ123Invalid"}` - Invalid location error handling
-
-#### **Temperature Unit Tests**
-- ⏳ `{"location": "New York"}` - Default Fahrenheit display
-- ⏳ `{"location": "New York", "temperature_unit": "celsius"}` - Celsius conversion
-- ⏳ `{"location": "Chicago", "temperature_unit": "fahrenheit"}` - Explicit Fahrenheit
-
-#### **Backwards Compatibility Tests**
-- ⏳ `{"latitude": 25.7617, "longitude": -80.1918}` - Original coordinate tools
-- ⏳ `{"location": "40.7128,-74.0060"}` - Coordinates in location field
 
 ### Known Issues
 - 🐛 State filtering for US cities needs refinement
