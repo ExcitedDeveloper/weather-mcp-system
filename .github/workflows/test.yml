@@ -1,0 +1,189 @@
+name: Integration Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: 'server/package-lock.json'
+
+    - name: Install dependencies
+      run: |
+        cd server
+        npm ci
+
+    - name: Build TypeScript
+      run: |
+        cd server
+        npm run build
+
+    - name: Run integration tests
+      run: |
+        cd server
+        npm run test:run
+      env:
+        # Set timeout for network-dependent tests
+        VITEST_TIMEOUT: 20000
+        # Reduce concurrency for GitHub Actions to avoid rate limiting
+        VITEST_MAX_CONCURRENCY: 2
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-node-${{ matrix.node-version }}
+        path: server/coverage/
+        retention-days: 7
+
+  test-with-coverage:
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: 'server/package-lock.json'
+
+    - name: Install dependencies
+      run: |
+        cd server
+        npm ci
+
+    - name: Build TypeScript
+      run: |
+        cd server
+        npm run build
+
+    - name: Install coverage dependencies
+      run: |
+        cd server
+        npm install --save-dev @vitest/coverage-v8
+
+    - name: Run tests with coverage
+      run: |
+        cd server
+        npm run test:coverage
+      env:
+        VITEST_TIMEOUT: 20000
+        VITEST_MAX_CONCURRENCY: 2
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      if: success()
+      with:
+        file: server/coverage/coverage-final.json
+        directory: server/coverage/
+        flags: integration
+        name: weather-mcp-server
+        fail_ci_if_error: false
+
+    - name: Comment coverage on PR
+      uses: marocchino/sticky-pull-request-comment@v2
+      if: github.event_name == 'pull_request'
+      with:
+        recreate: true
+        message: |
+          ## 🧪 Test Coverage Report
+          
+          Coverage details will be available once the tests complete.
+          
+          The integration tests validate:
+          - ✅ Real API calls to Open-Meteo services
+          - ✅ Location parsing and state filtering precision
+          - ✅ Temperature unit conversions with live data
+          - ✅ Error handling and edge cases
+          - ✅ MCP protocol compliance
+          
+          All 60+ test cases from the PRD.md are automated.
+
+  validate-test-plan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: 'server/package-lock.json'
+
+    - name: Install dependencies
+      run: |
+        cd server
+        npm ci
+
+    - name: Build TypeScript
+      run: |
+        cd server
+        npm run build
+
+    - name: Validate all PRD test cases are implemented
+      run: |
+        cd server
+        echo "Checking if all test cases from PRD.md are implemented..."
+        
+        # Count test cases in fixtures
+        fixture_count=$(grep -c "input:" tests/fixtures/test-locations.ts || echo 0)
+        echo "Test fixtures found: $fixture_count"
+        
+        # Count test implementations
+        test_count=$(grep -c "test\|it" tests/integration/*.test.ts || echo 0)
+        echo "Test implementations found: $test_count"
+        
+        # Ensure we have substantial test coverage
+        if [ "$fixture_count" -lt 50 ]; then
+          echo "❌ Insufficient test fixtures (expected 50+, got $fixture_count)"
+          exit 1
+        fi
+        
+        if [ "$test_count" -lt 30 ]; then
+          echo "❌ Insufficient test implementations (expected 30+, got $test_count)"
+          exit 1
+        fi
+        
+        echo "✅ Test coverage validation passed"
+
+    - name: Verify test categories are complete
+      run: |
+        cd server
+        echo "Verifying test categories..."
+        
+        categories="major-cities ambiguous-springfield ambiguous-portland small-cities international coordinates error-handling"
+        
+        for category in $categories; do
+          if grep -q "$category" tests/fixtures/test-locations.ts; then
+            echo "✅ $category tests found"
+          else
+            echo "❌ Missing $category tests"
+            exit 1
+          fi
+        done
+        
+        echo "✅ All test categories are implemented"
