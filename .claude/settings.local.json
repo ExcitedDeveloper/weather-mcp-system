@@ -6,7 +6,12 @@
       "Bash(git push:*)",
       "WebFetch(domain:geocoding-api.open-meteo.com)",
       "Bash(npm run build:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "WebSearch",
+      "Bash(npm install:*)",
+      "Bash(npm run test:run:*)",
+      "Bash(npx vitest run:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []
