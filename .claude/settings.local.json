@@ -16,7 +16,19 @@
       "Bash(npm run test:*)",
       "Bash(npm test)",
       "Bash(npx tsc:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(for:*)",
+      "Bash(do echo -n \"$category: \")",
+      "Bash(grep:*)",
+      "Bash(done)",
+      "Bash(fixture_count=75)",
+      "Bash(test_count=38)",
+      "Bash(echo:*)",
+      "Bash(categories=\"major-cities ambiguous-springfield ambiguous-portland small-cities international coordinates error-handling\")",
+      "Bash(do if grep -q \"$category\" tests/fixtures/test-locations.ts)",
+      "Bash(then echo \"✅ $category tests found\")",
+      "Bash(else echo \"❌ Missing $category tests\")",
+      "Bash(fi)"
     ],
     "deny": [],
     "ask": []

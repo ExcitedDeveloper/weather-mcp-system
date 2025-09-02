@@ -181,6 +181,95 @@ export const AMBIGUOUS_CITY_TESTS: TestLocation[] = [
     approximateLatitude: 32.4609,
     approximateLongitude: -84.9877,
     category: 'ambiguous-columbus'
+  },
+
+  // Kansas City disambiguation (border city spanning states)
+  { 
+    input: 'Kansas City, MO', 
+    expectedCity: 'Kansas City', 
+    expectedState: 'Missouri', 
+    expectedCountry: 'United States',
+    approximateLatitude: 39.0997,
+    approximateLongitude: -94.5786,
+    category: 'ambiguous-kansas-city'
+  },
+  { 
+    input: 'Kansas City, KS', 
+    expectedCity: 'Kansas City', 
+    expectedState: 'Kansas', 
+    expectedCountry: 'United States',
+    approximateLatitude: 39.1142,
+    approximateLongitude: -94.6275,
+    category: 'ambiguous-kansas-city'
+  },
+
+  // Richmond disambiguation
+  { 
+    input: 'Richmond, VA', 
+    expectedCity: 'Richmond', 
+    expectedState: 'Virginia', 
+    expectedCountry: 'United States',
+    approximateLatitude: 37.5407,
+    approximateLongitude: -77.4360,
+    category: 'ambiguous-richmond'
+  },
+  { 
+    input: 'Richmond, CA', 
+    expectedCity: 'Richmond', 
+    expectedState: 'California', 
+    expectedCountry: 'United States',
+    approximateLatitude: 37.9358,
+    approximateLongitude: -122.3477,
+    category: 'ambiguous-richmond'
+  },
+
+  // Cambridge disambiguation
+  { 
+    input: 'Cambridge, MA', 
+    expectedCity: 'Cambridge', 
+    expectedState: 'Massachusetts', 
+    expectedCountry: 'United States',
+    approximateLatitude: 42.3736,
+    approximateLongitude: -71.1097,
+    category: 'ambiguous-cambridge'
+  },
+  { 
+    input: 'Cambridge, MD', 
+    expectedCity: 'Cambridge', 
+    expectedState: 'Maryland', 
+    expectedCountry: 'United States',
+    approximateLatitude: 38.5631,
+    approximateLongitude: -76.0783,
+    category: 'ambiguous-cambridge'
+  },
+
+  // Franklin disambiguation
+  { 
+    input: 'Franklin, TN', 
+    expectedCity: 'Franklin', 
+    expectedState: 'Tennessee', 
+    expectedCountry: 'United States',
+    approximateLatitude: 35.9251,
+    approximateLongitude: -86.8689,
+    category: 'ambiguous-franklin'
+  },
+  { 
+    input: 'Franklin, OH', 
+    expectedCity: 'Franklin', 
+    expectedState: 'Ohio', 
+    expectedCountry: 'United States',
+    approximateLatitude: 39.5589,
+    approximateLongitude: -84.3041,
+    category: 'ambiguous-franklin'
+  },
+  { 
+    input: 'Franklin, MA', 
+    expectedCity: 'Franklin', 
+    expectedState: 'Massachusetts', 
+    expectedCountry: 'United States',
+    approximateLatitude: 42.0834,
+    approximateLongitude: -71.3967,
+    category: 'ambiguous-franklin'
   }
 ]
 
@@ -232,6 +321,104 @@ export const SMALL_CITY_TESTS: TestLocation[] = [
   }
 ]
 
+// Special US cases and state format variations
+export const SPECIAL_US_CASES: TestLocation[] = [
+  { 
+    input: 'Washington, DC', 
+    expectedCity: 'Washington', 
+    expectedState: 'District of Columbia', 
+    expectedCountry: 'United States',
+    approximateLatitude: 38.9072,
+    approximateLongitude: -77.0369,
+    category: 'special-cases'
+  },
+  { 
+    input: 'Las Vegas, NV', 
+    expectedCity: 'Las Vegas', 
+    expectedState: 'Nevada', 
+    expectedCountry: 'United States',
+    approximateLatitude: 36.1699,
+    approximateLongitude: -115.1398,
+    category: 'special-cases'
+  },
+  { 
+    input: 'New Orleans, LA', 
+    expectedCity: 'New Orleans', 
+    expectedState: 'Louisiana', 
+    expectedCountry: 'United States',
+    approximateLatitude: 29.9511,
+    approximateLongitude: -90.0715,
+    category: 'special-cases'
+  },
+  { 
+    input: 'Salt Lake City, UT', 
+    expectedCity: 'Salt Lake City', 
+    expectedState: 'Utah', 
+    expectedCountry: 'United States',
+    approximateLatitude: 40.7608,
+    approximateLongitude: -111.8910,
+    category: 'special-cases'
+  }
+]
+
+// State format variations (abbreviation vs full name)
+export const STATE_FORMAT_TESTS: TestLocation[] = [
+  { 
+    input: 'Austin, TX', 
+    expectedCity: 'Austin', 
+    expectedState: 'Texas', 
+    expectedCountry: 'United States',
+    approximateLatitude: 30.2672,
+    approximateLongitude: -97.7431,
+    category: 'state-format'
+  },
+  { 
+    input: 'Austin, Texas', 
+    expectedCity: 'Austin', 
+    expectedState: 'Texas', 
+    expectedCountry: 'United States',
+    approximateLatitude: 30.2672,
+    approximateLongitude: -97.7431,
+    category: 'state-format'
+  },
+  { 
+    input: 'Denver, CO', 
+    expectedCity: 'Denver', 
+    expectedState: 'Colorado', 
+    expectedCountry: 'United States',
+    approximateLatitude: 39.7392,
+    approximateLongitude: -104.9903,
+    category: 'state-format'
+  },
+  { 
+    input: 'Denver, Colorado', 
+    expectedCity: 'Denver', 
+    expectedState: 'Colorado', 
+    expectedCountry: 'United States',
+    approximateLatitude: 39.7392,
+    approximateLongitude: -104.9903,
+    category: 'state-format'
+  },
+  { 
+    input: 'Boston, MA', 
+    expectedCity: 'Boston', 
+    expectedState: 'Massachusetts', 
+    expectedCountry: 'United States',
+    approximateLatitude: 42.3601,
+    approximateLongitude: -71.0589,
+    category: 'state-format'
+  },
+  { 
+    input: 'Boston, Massachusetts', 
+    expectedCity: 'Boston', 
+    expectedState: 'Massachusetts', 
+    expectedCountry: 'United States',
+    approximateLatitude: 42.3601,
+    approximateLongitude: -71.0589,
+    category: 'state-format'
+  }
+]
+
 export const INTERNATIONAL_TESTS: TestLocation[] = [
   { 
     input: 'London, United Kingdom', 
@@ -272,6 +459,86 @@ export const INTERNATIONAL_TESTS: TestLocation[] = [
     approximateLatitude: 43.7,
     approximateLongitude: -79.4,
     category: 'international'
+  },
+  { 
+    input: 'Berlin, Germany', 
+    expectedCity: 'Berlin', 
+    expectedCountry: 'Germany',
+    approximateLatitude: 52.5200,
+    approximateLongitude: 13.4050,
+    category: 'international'
+  },
+  { 
+    input: 'Rome, Italy', 
+    expectedCity: 'Rome', 
+    expectedCountry: 'Italy',
+    approximateLatitude: 41.9028,
+    approximateLongitude: 12.4964,
+    category: 'international'
+  },
+  { 
+    input: 'Athens, Greece', 
+    expectedCity: 'Athens', 
+    expectedCountry: 'Greece',
+    approximateLatitude: 37.9755,
+    approximateLongitude: 23.7348,
+    category: 'international'
+  },
+  { 
+    input: 'Manchester, England', 
+    expectedCity: 'Manchester', 
+    expectedCountry: 'United Kingdom',
+    approximateLatitude: 53.4808,
+    approximateLongitude: -2.2426,
+    category: 'international'
+  },
+  { 
+    input: 'Birmingham, England', 
+    expectedCity: 'Birmingham', 
+    expectedCountry: 'United Kingdom',
+    approximateLatitude: 52.4862,
+    approximateLongitude: -1.8904,
+    category: 'international'
+  },
+  { 
+    input: 'Mexico City, Mexico', 
+    expectedCity: 'Mexico City', 
+    expectedCountry: 'Mexico',
+    approximateLatitude: 19.4326,
+    approximateLongitude: -99.1332,
+    category: 'international'
+  },
+  { 
+    input: 'São Paulo, Brazil', 
+    expectedCity: 'São Paulo', 
+    expectedCountry: 'Brazil',
+    approximateLatitude: -23.5505,
+    approximateLongitude: -46.6333,
+    category: 'international'
+  },
+  { 
+    input: 'Mumbai, India', 
+    expectedCity: 'Mumbai', 
+    expectedCountry: 'India',
+    approximateLatitude: 19.0760,
+    approximateLongitude: 72.8777,
+    category: 'international'
+  },
+  { 
+    input: 'Lagos, Nigeria', 
+    expectedCity: 'Lagos', 
+    expectedCountry: 'Nigeria',
+    approximateLatitude: 6.5244,
+    approximateLongitude: 3.3792,
+    category: 'international'
+  },
+  { 
+    input: 'Moscow, Russia', 
+    expectedCity: 'Moscow', 
+    expectedCountry: 'Russia',
+    approximateLatitude: 55.7558,
+    approximateLongitude: 37.6176,
+    category: 'international'
   }
 ]
 
@@ -296,6 +563,34 @@ export const COORDINATE_TESTS = [
     approximateLatitude: 25.7617,
     approximateLongitude: -80.1918,
     category: 'coordinates'
+  },
+  {
+    input: '51.5074,-0.1278',
+    expectedDescription: 'London coordinates',
+    approximateLatitude: 51.5074,
+    approximateLongitude: -0.1278,
+    category: 'coordinates'
+  },
+  {
+    input: '48.8566,2.3522',
+    expectedDescription: 'Paris coordinates',
+    approximateLatitude: 48.8566,
+    approximateLongitude: 2.3522,
+    category: 'coordinates'
+  },
+  {
+    input: '35.6762,139.6503',
+    expectedDescription: 'Tokyo coordinates',
+    approximateLatitude: 35.6762,
+    approximateLongitude: 139.6503,
+    category: 'coordinates'
+  },
+  {
+    input: '-33.8688,151.2093',
+    expectedDescription: 'Sydney coordinates',
+    approximateLatitude: -33.8688,
+    approximateLongitude: 151.2093,
+    category: 'coordinates'
   }
 ]
 
@@ -303,22 +598,112 @@ export const ERROR_TEST_CASES = [
   {
     input: 'NonexistentCity12345',
     expectedError: 'No locations found',
-    category: 'invalid-location'
+    category: 'error-handling'
   },
   {
     input: 'Springfield, XX',
     expectedError: 'No locations found',
-    category: 'invalid-state'
+    category: 'error-handling'
   },
   {
     input: '',
     expectedError: 'empty',
-    category: 'empty-input'
+    category: 'error-handling'
   },
   {
     input: '999,999',
     expectedError: 'coordinate',
-    category: 'invalid-coordinates'
+    category: 'error-handling'
+  },
+  {
+    input: '200,-400',
+    expectedError: 'Invalid coordinates',
+    category: 'error-handling'
+  },
+  {
+    input: 'Miami FL',
+    expectedError: 'format',
+    category: 'error-handling'
+  },
+  {
+    input: 'XYZ123Invalid',
+    expectedError: 'No locations found',
+    category: 'error-handling'
+  },
+  {
+    input: '90,180',
+    expectedError: 'boundary',
+    category: 'error-handling'
+  },
+  {
+    input: '-90,-180',
+    expectedError: 'boundary',
+    category: 'error-handling'
+  },
+  {
+    input: '0,0',
+    expectedError: 'equator',
+    category: 'error-handling'
+  }
+]
+
+// Temperature unit testing for different climate zones
+export const TEMPERATURE_UNIT_TESTS = [
+  {
+    location: 'Phoenix, AZ',
+    temperatureUnit: 'fahrenheit',
+    expectedTempRange: [60, 120],
+    climate: 'hot-desert',
+    category: 'temperature-units'
+  },
+  {
+    location: 'Phoenix, AZ',
+    temperatureUnit: 'celsius',
+    expectedTempRange: [15, 49],
+    climate: 'hot-desert',
+    category: 'temperature-units'
+  },
+  {
+    location: 'Anchorage, AK',
+    temperatureUnit: 'fahrenheit',
+    expectedTempRange: [-20, 70],
+    climate: 'cold-subarctic',
+    category: 'temperature-units'
+  },
+  {
+    location: 'Anchorage, AK',
+    temperatureUnit: 'celsius',
+    expectedTempRange: [-29, 21],
+    climate: 'cold-subarctic',
+    category: 'temperature-units'
+  },
+  {
+    location: 'Miami, FL',
+    temperatureUnit: 'fahrenheit',
+    expectedTempRange: [70, 95],
+    climate: 'tropical',
+    category: 'temperature-units'
+  },
+  {
+    location: 'Miami, FL',
+    temperatureUnit: 'celsius',
+    expectedTempRange: [21, 35],
+    climate: 'tropical',
+    category: 'temperature-units'
+  },
+  {
+    location: 'San Francisco, CA',
+    temperatureUnit: 'fahrenheit',
+    expectedTempRange: [45, 75],
+    climate: 'mediterranean',
+    category: 'temperature-units'
+  },
+  {
+    location: 'San Francisco, CA',
+    temperatureUnit: 'celsius',
+    expectedTempRange: [7, 24],
+    climate: 'mediterranean',
+    category: 'temperature-units'
   }
 ]
 
@@ -327,13 +712,20 @@ export const ALL_LOCATION_TESTS: TestLocation[] = [
   ...US_CITY_STATE_TESTS,
   ...AMBIGUOUS_CITY_TESTS,
   ...SMALL_CITY_TESTS,
+  ...SPECIAL_US_CASES,
+  ...STATE_FORMAT_TESTS,
   ...INTERNATIONAL_TESTS
 ]
 
-// Climate zone tests for temperature validation
-export const CLIMATE_ZONE_TESTS = [
-  { location: 'Anchorage, AK', expectedTempRange: [-20, 70], season: 'winter' },
-  { location: 'Phoenix, AZ', expectedTempRange: [60, 120], season: 'summer' },
-  { location: 'Miami, FL', expectedTempRange: [70, 95], season: 'year-round' },
-  { location: 'International Falls, MN', expectedTempRange: [-30, 85], season: 'winter-summer' }
+// All test fixtures combined (for counting)
+export const ALL_TEST_FIXTURES = [
+  ...US_CITY_STATE_TESTS,
+  ...AMBIGUOUS_CITY_TESTS,
+  ...SMALL_CITY_TESTS,
+  ...SPECIAL_US_CASES,
+  ...STATE_FORMAT_TESTS,
+  ...INTERNATIONAL_TESTS,
+  ...COORDINATE_TESTS,
+  ...ERROR_TEST_CASES,
+  ...TEMPERATURE_UNIT_TESTS
 ]
