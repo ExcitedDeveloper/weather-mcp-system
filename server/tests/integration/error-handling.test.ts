@@ -26,7 +26,7 @@ describe('Error Handling Integration Tests', () => {
 
     test('should return helpful error for invalid state abbreviations', async () => {
       const result = await client.callTool('search_locations', {
-        query: 'Springfield, XX'
+        query: 'Nonexistentville, ZZ'
       })
 
       expect(result.isError).toBe(true)

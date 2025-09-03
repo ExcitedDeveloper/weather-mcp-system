@@ -28,7 +28,9 @@
       "Bash(do if grep -q \"$category\" tests/fixtures/test-locations.ts)",
       "Bash(then echo \"✅ $category tests found\")",
       "Bash(else echo \"❌ Missing $category tests\")",
-      "Bash(fi)"
+      "Bash(fi)",
+      "WebFetch(domain:github.com)",
+      "Bash(npm test:*)"
     ],
     "deny": [],
     "ask": []

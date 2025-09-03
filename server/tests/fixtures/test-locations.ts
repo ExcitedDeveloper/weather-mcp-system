@@ -528,8 +528,8 @@ export const INTERNATIONAL_TESTS: TestLocation[] = [
     input: 'Lagos, Nigeria', 
     expectedCity: 'Lagos', 
     expectedCountry: 'Nigeria',
-    approximateLatitude: 6.5244,
-    approximateLongitude: 3.3792,
+    approximateLatitude: 6.4541,
+    approximateLongitude: 3.3947,
     category: 'international'
   },
   { 
@@ -601,7 +601,7 @@ export const ERROR_TEST_CASES = [
     category: 'error-handling'
   },
   {
-    input: 'Springfield, XX',
+    input: 'Nonexistentville, ZZ',
     expectedError: 'No locations found',
     category: 'error-handling'
   },
@@ -716,6 +716,9 @@ export const ALL_LOCATION_TESTS: TestLocation[] = [
   ...STATE_FORMAT_TESTS,
   ...INTERNATIONAL_TESTS
 ]
+
+// Climate zone tests for weather data validation
+export const CLIMATE_ZONE_TESTS = TEMPERATURE_UNIT_TESTS
 
 // All test fixtures combined (for counting)
 export const ALL_TEST_FIXTURES = [

@@ -24,6 +24,14 @@ function parseCityState(query: string): ParsedLocation {
         isUSQuery: true
       }
     }
+    
+    
+    // For international locations, still extract the city part
+    return {
+      city,
+      state: undefined,
+      isUSQuery: false
+    }
   }
   
   return {
@@ -86,7 +94,7 @@ export async function searchLocations(query: string): Promise<GeocodingResult[]>
   const validatedQuery = validateLocation(query)
   const { city, state, isUSQuery } = parseCityState(validatedQuery)
   
-  const searchTerm = isUSQuery ? city : validatedQuery
+  const searchTerm = city
   const url = buildGeocodingUrl(searchTerm)
   
   const data = await apiClient.get<GeocodingApiResponse>(url)

@@ -133,7 +133,7 @@ describe('geocoding', () => {
       const result = await searchLocations('London, UK')
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        expect.stringMatching(/name=London%2C\+UK/)
+        expect.stringMatching(/name=London/)
       )
       expect(result).toEqual(mockGeocodingResponse.results)
     })
@@ -236,7 +236,7 @@ describe('geocoding', () => {
       await searchLocations('Paris, France')
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        expect.stringMatching(/name=Paris%2C\+France/)
+        expect.stringMatching(/name=Paris/)
       )
     })
   })
