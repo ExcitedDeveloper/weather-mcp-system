@@ -91,4 +91,16 @@ export const TOOL_SCHEMAS: Tool[] = [
       required: ['query'],
     },
   },
+  {
+    name: 'get_weather_advice',
+    description: 'Get weather-based clothing, activity, and safety recommendations for a location',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        ...locationProperty,
+        ...temperatureUnitProperty,
+      },
+      required: ['location'],
+    },
+  },
 ]
