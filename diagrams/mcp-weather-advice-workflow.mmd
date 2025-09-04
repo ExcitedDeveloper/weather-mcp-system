@@ -1,0 +1,71 @@
+graph TB
+    %% MCP Weather Advice Workflow Diagram
+    %% Use with: mermaid.live, GitHub, VS Code Mermaid extensions
+    
+    subgraph "MCP CLIENT"
+        A[Claude Desktop]
+        B[MCP Inspector]
+        C[Custom Apps]
+    end
+    
+    subgraph "MCP SERVER"
+        D[Tool Registry]
+        E[Request Router]
+        F[Schema Validation]
+        G[Tool Handler<br/>tools/index.ts]
+        H[Advice Engine<br/>advice.ts]
+        I[Response Formatter]
+    end
+    
+    subgraph "EXTERNAL APIs"
+        J[Open-Meteo<br/>Weather API]
+        K[Geocoding API]
+    end
+    
+    subgraph "RECOMMENDATION ENGINE"
+        L[Location Parser<br/>geocoding.ts]
+        M[Temperature Converter]
+        N[Clothing Logic<br/>6 temp ranges]
+        O[Activity Logic<br/>conditions based]
+        P[Warning Logic<br/>safety rules]
+        Q[Format Output<br/>emojis + structure]
+    end
+    
+    %% Main workflow
+    A --> |1. Tool Call Request<br/>JSON-RPC| D
+    B --> |Tool Call Request| D
+    C --> |Tool Call Request| D
+    
+    D --> |2. Route Request| E
+    E --> |3. Validate Schema| F
+    F --> |4. Execute Handler| G
+    G --> |5. Generate Advice| H
+    
+    %% Advice engine internal flow
+    H --> |6a. Parse Location| L
+    L --> |6b. Geocode Request| K
+    K --> |Coordinates| L
+    L --> |6c. Weather Request| J
+    J --> |Weather Data| H
+    
+    H --> |6d. Convert Temperature<br/>Celsius → Fahrenheit| M
+    M --> |6e. Analyze Conditions| N
+    N --> |Clothing Recommendations| O
+    O --> |Activity Suggestions| P
+    P --> |Safety Warnings| Q
+    
+    Q --> |7. Format Response| I
+    I --> |8. MCP Response<br/>CallToolResult| A
+    I --> |MCP Response| B
+    I --> |MCP Response| C
+    
+    %% Styling
+    classDef client fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef server fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef api fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef engine fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    
+    class A,B,C client
+    class D,E,F,G,H,I server
+    class J,K api
+    class L,M,N,O,P,Q engine

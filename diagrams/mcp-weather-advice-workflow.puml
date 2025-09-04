@@ -1,0 +1,68 @@
+@startuml MCP Weather Advice Workflow
+!theme plain
+
+title MCP Weather Advice Tool Workflow
+
+skinparam backgroundColor #FFFFFF
+skinparam participant {
+    BackgroundColor<<Client>> #E1F5FE
+    BackgroundColor<<Server>> #F3E5F5
+    BackgroundColor<<API>> #E8F5E8
+    BackgroundColor<<Engine>> #FFF3E0
+}
+
+participant "MCP Client\n(Claude Desktop,\nMCP Inspector)" as Client <<Client>>
+participant "MCP Server\n(Request Router)" as Server <<Server>>
+participant "Tool Handler\n(tools/index.ts)" as Handler <<Server>>
+participant "Advice Engine\n(advice.ts)" as Engine <<Engine>>
+participant "Geocoding API\n(Open-Meteo)" as Geo <<API>>
+participant "Weather API\n(Open-Meteo)" as Weather <<API>>
+
+== Tool Call Request ==
+Client -> Server: 1. JSON-RPC Tool Call\n{\n  "method": "tools/call",\n  "params": {\n    "name": "get_weather_advice",\n    "arguments": {\n      "location": "Chicago, IL",\n      "temperature_unit": "fahrenheit"\n    }\n  }\n}
+
+== Request Processing ==
+Server -> Server: 2. Schema Validation\n& Input Sanitization
+Server -> Handler: 3. Route to Handler\nhandleGetWeatherAdvice()
+Handler -> Handler: 4. Validate Arguments\n- validateLocation()\n- validateTemperatureUnit()
+
+== Weather Data Retrieval ==
+Handler -> Engine: 5. Generate Advice\ngenerateWeatherAdvice()
+Engine -> Engine: 6a. Parse Location Input\n"Chicago, IL" → coordinates
+Engine -> Geo: 6b. Geocoding Request\nGET /v1/search?name=Chicago,IL
+Geo --> Engine: 6c. Coordinates Response\n{lat: 41.88, lng: -87.63}
+Engine -> Weather: 6d. Weather API Request\nGET /v1/forecast?lat=41.88&lng=-87.63
+Weather --> Engine: 6e. Weather Data Response\n{temp: 18°C, humidity: 88%, ...}
+
+== Recommendation Processing ==
+Engine -> Engine: 7a. Temperature Conversion\n18°C → 64°F (API always Celsius)
+Engine -> Engine: 7b. Multi-Factor Analysis\n- getClothingRecommendations(64°F)\n- getActivityRecommendations()\n- getWeatherWarnings()
+
+note right of Engine
+  **Temperature Logic:**
+  < 20°F: Heavy winter gear
+  20-40°F: Heavy jacket
+  40-60°F: Light jacket  
+  60-75°F: T-shirt ✓ (64°F)
+  75-85°F: Light clothing
+  > 85°F: Minimal clothing
+  
+  **Weather Conditions:**
+  Rain → Umbrella
+  Snow → Winter boots
+  Wind → Wind-resistant
+  Thunderstorm → Shelter
+end note
+
+Engine -> Engine: 7c. Format Structured Output\n🎯 Weather Advice\n👔 CLOTHING\n🏃 ACTIVITIES\n⚠️ WARNINGS
+
+== Response Delivery ==
+Engine --> Handler: 8. Formatted Advice String
+Handler -> Handler: 9. Create MCP Response\nCallToolResult format
+Handler --> Server: 10. Return Tool Result
+Server --> Client: 11. JSON-RPC Response\n{\n  "result": {\n    "content": [{\n      "type": "text",\n      "text": "🎯 Weather Advice..."\n    }]\n  }\n}
+
+== Result Display ==
+Client -> Client: 12. Display to User\nFormatted weather advice\nwith recommendations
+
+@enduml

@@ -1,0 +1,120 @@
+digraph MCPWeatherAdviceWorkflow {
+    // Use with: Graphviz online tools, local dot command
+    // Command: dot -Tpng mcp-weather-advice-workflow.dot -o workflow.png
+    
+    rankdir=TB;
+    newrank=true;
+    
+    // Graph styling
+    graph [
+        fontname="Arial",
+        fontsize=14,
+        label="MCP Weather Advice Tool Workflow\n\nShowing complete data flow from client request to formatted response",
+        labelloc=t,
+        bgcolor="#FFFFFF"
+    ];
+    
+    node [
+        fontname="Arial",
+        fontsize=10,
+        shape=box,
+        style=filled
+    ];
+    
+    edge [
+        fontname="Arial",
+        fontsize=9,
+        color="#333333"
+    ];
+    
+    // Client layer
+    subgraph cluster_client {
+        label="MCP CLIENTS";
+        style=filled;
+        fillcolor="#E1F5FE";
+        
+        claude [label="Claude Desktop\nMCP Inspector\nCustom Apps", fillcolor="#B3E5FC"];
+    }
+    
+    // MCP Server layer
+    subgraph cluster_server {
+        label="MCP SERVER";
+        style=filled;
+        fillcolor="#F3E5F5";
+        
+        registry [label="Tool Registry\n(schemas.ts)", fillcolor="#E1BEE7"];
+        router [label="Request Router\n(index.ts)", fillcolor="#E1BEE7"];
+        validator [label="Schema Validation\n(validation.ts)", fillcolor="#E1BEE7"];
+        handler [label="Tool Handler\n(tools/index.ts)", fillcolor="#E1BEE7"];
+    }
+    
+    // Advice Engine layer
+    subgraph cluster_engine {
+        label="ADVICE ENGINE";
+        style=filled;
+        fillcolor="#FFF3E0";
+        
+        advice_main [label="Advice Generator\n(advice.ts)", fillcolor="#FFE0B2"];
+        location_parser [label="Location Parser\n(geocoding.ts)", fillcolor="#FFE0B2"];
+        temp_converter [label="Temperature\nConverter", fillcolor="#FFE0B2"];
+        clothing_logic [label="Clothing Logic\n(6 temp ranges)", fillcolor="#FFE0B2"];
+        activity_logic [label="Activity Logic\n(conditions)", fillcolor="#FFE0B2"];
+        warning_logic [label="Warning Logic\n(safety)", fillcolor="#FFE0B2"];
+        formatter [label="Response\nFormatter", fillcolor="#FFE0B2"];
+    }
+    
+    // External APIs
+    subgraph cluster_apis {
+        label="EXTERNAL APIs";
+        style=filled;
+        fillcolor="#E8F5E8";
+        
+        geocoding_api [label="Geocoding API\n(Open-Meteo)", fillcolor="#C8E6C9"];
+        weather_api [label="Weather API\n(Open-Meteo)", fillcolor="#C8E6C9"];
+    }
+    
+    // Main workflow connections
+    claude -> registry [label="1. Tool Call\nJSON-RPC"];
+    registry -> router [label="2. Route Request"];
+    router -> validator [label="3. Validate Schema"];
+    validator -> handler [label="4. Execute Handler"];
+    handler -> advice_main [label="5. Generate Advice"];
+    
+    // Advice engine internal flow
+    advice_main -> location_parser [label="6a. Parse Location"];
+    location_parser -> geocoding_api [label="6b. Geocode\nRequest"];
+    geocoding_api -> location_parser [label="Coordinates"];
+    location_parser -> weather_api [label="6c. Weather\nRequest"];
+    weather_api -> advice_main [label="Weather Data"];
+    
+    advice_main -> temp_converter [label="6d. Convert\nCelsius→Fahrenheit"];
+    temp_converter -> clothing_logic [label="6e. Analyze\nTemperature"];
+    clothing_logic -> activity_logic [label="Clothing\nRecommendations"];
+    activity_logic -> warning_logic [label="Activity\nSuggestions"];
+    warning_logic -> formatter [label="Safety\nWarnings"];
+    
+    formatter -> handler [label="7. Formatted\nAdvice"];
+    handler -> router [label="8. MCP Response\nCallToolResult"];
+    router -> claude [label="9. JSON-RPC\nResponse"];
+    
+    // Temperature ranges annotation
+    temp_ranges [
+        label="TEMPERATURE LOGIC\n\n< 20°F: Heavy winter gear\n20-40°F: Heavy jacket\n40-60°F: Light jacket\n60-75°F: T-shirt, comfortable\n75-85°F: Light clothing\n> 85°F: Minimal clothing\n\nWEATHER CONDITIONS\n\nRain → Umbrella, waterproof\nSnow → Boots, traction\nWind → Wind-resistant\nThunderstorm → Shelter",
+        shape=note,
+        fillcolor="#FFFFCC",
+        fontsize=8
+    ];
+    
+    // Position the annotation
+    temp_ranges -> clothing_logic [style=dashed, color="#CCCCCC"];
+    
+    // Force ranking for better layout
+    {rank=same; claude}
+    {rank=same; registry, router}
+    {rank=same; validator, handler}
+    {rank=same; advice_main}
+    {rank=same; location_parser, temp_converter}
+    {rank=same; clothing_logic, activity_logic, warning_logic}
+    {rank=same; formatter}
+    {rank=same; geocoding_api, weather_api}
+}
