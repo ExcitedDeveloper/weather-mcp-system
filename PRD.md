@@ -231,13 +231,13 @@ weather-mcp-system/
 - `get_weather_forecast_by_location` - 3-day forecast for location names or coordinates
 - `search_locations` - Geocoding and location search with state filtering
 - `get_weather_advice` - Smart clothing and activity recommendations ✅ IMPLEMENTED
-- `get_weather_alerts` - Active weather warnings and emergency alerts (planned)
+- `get_weather_alerts` - Active weather warnings and emergency alerts ✅ IMPLEMENTED
 
 **Data Sources:**
 - **Primary:** Open-Meteo API (`https://api.open-meteo.com/v1/`)
 - **Geocoding:** Open-Meteo Geocoding API (`https://geocoding-api.open-meteo.com/v1/`)
-- **Alerts:** US National Weather Service API (`https://api.weather.gov/`) (planned)
-- **Coverage:** Global weather data, enhanced US city/state support
+- **Alerts:** US National Weather Service API (`https://api.weather.gov/`) ✅ IMPLEMENTED
+- **Coverage:** Global weather data, enhanced US city/state support, US weather alerts
 - **Update Frequency:** Hourly weather data, real-time alerts
 
 ### 1.3 Weather Parameters
@@ -262,13 +262,14 @@ weather-mcp-system/
 - Wind condition warnings
 - Special weather alerts (fog, thunderstorms, snow)
 
-**Weather Alerts & Warnings (Planned):**
+**Weather Alerts & Warnings ✅ IMPLEMENTED:**
 - Active weather alerts for US locations
 - Severity levels: Extreme, Severe, Moderate, Minor
 - Urgency classifications: Immediate, Expected, Future
 - Alert types: Tornado warnings, flood watches, winter storm advisories, etc.
 - Detailed descriptions and safety instructions
 - Effective dates and expiration times
+- International location handling with helpful error messages
 
 ### 1.4 Technical Requirements
 
@@ -280,7 +281,7 @@ weather-mcp-system/
 **APIs Integrated:**
 - **Open-Meteo API** - Global weather data (no API key)
 - **Open-Meteo Geocoding API** - Location search and coordinates (no API key)
-- **US National Weather Service** - Weather alerts for US locations (no API key, planned)
+- **US National Weather Service** - Weather alerts for US locations (no API key) ✅ IMPLEMENTED
 
 **Error Handling:**
 - Network request failures
@@ -316,7 +317,8 @@ weather-mcp-system/
 - **Formatters** (`formatters.ts`) - Human-readable weather report generation
 - **Utilities** (`utils.ts`) - Temperature conversion and helper functions
 - **Testing Infrastructure** (`tests/`) - Unit and integration test suites
-- **Recommendation Engine** - Weather-to-advice logic (planned)
+- **Recommendation Engine** - Weather-to-advice logic ✅ IMPLEMENTED
+- **Weather Alerts System** - NWS integration for US weather alerts ✅ IMPLEMENTED
 
 ---
 
@@ -520,8 +522,8 @@ interface WeatherTools {
   get_current_weather_by_location(location: string, temperature_unit?: TemperatureUnit): CurrentWeatherResponse;
   get_weather_forecast_by_location(location: string, temperature_unit?: TemperatureUnit): ForecastResponse;
   search_locations(query: string): LocationSearchResponse;
-  get_weather_advice(location: string, temperature_unit?: TemperatureUnit): WeatherAdviceResponse; // Planned
-  get_weather_alerts(location: string): WeatherAlertsResponse; // Planned
+  get_weather_advice(location: string, temperature_unit?: TemperatureUnit): WeatherAdviceResponse; // ✅ IMPLEMENTED
+  get_weather_alerts(location: string): WeatherAlertsResponse; // ✅ IMPLEMENTED
 }
 
 interface WeatherAlert {
@@ -617,10 +619,10 @@ interface AppState {
 - ✅ Complete TESTING.md documentation (detailed procedures and architecture)
 - ✅ US state filtering precision validation (all ambiguous city tests passed)
 
-### Phase 3: Advanced Features (Week 3) - ✅ 1/4 COMPLETED
+### Phase 3: Advanced Features (Week 3) - ✅ 2/4 COMPLETED
 **GitHub Issues Status:**
 - **Issue #14:** ✅ Implement weather advice recommendation engine - COMPLETED
-- **Issue #15:** ⏳ Add weather alerts system with NWS API integration
+- **Issue #15:** ✅ Add weather alerts system with NWS API integration - COMPLETED
 - **Issue #16:** ⏳ Enhance error handling and user feedback
 - **Issue #17:** ⏳ Add caching and performance optimizations
 
@@ -663,9 +665,9 @@ interface AppState {
 - ✅ US state filtering precision confirmed (all ambiguous city tests passed)
 - ✅ Production-ready server code with 75+ automated test fixtures
 
-**Milestone 3: Feature Complete Server (End of Week 3)** - 🚧 IN PROGRESS (1/4 Complete)
+**Milestone 3: Feature Complete Server (End of Week 3)** - 🚧 IN PROGRESS (2/4 Complete)
 - ✅ Weather advice recommendations implemented (Issue #14 COMPLETED)
-- ⏳ Weather alerts system operational
+- ✅ Weather alerts system operational (Issue #15 COMPLETED)
 - ⏳ Enhanced error handling and user feedback
 - ⏳ Performance optimization completed
 
@@ -687,7 +689,7 @@ interface AppState {
 ## Success Criteria
 
 ### 5.1 Server Requirements
-- ✅ Responds to all 6 tool types correctly (including weather advice)
+- ✅ Responds to all 7 tool types correctly (including weather advice and alerts)
 - ✅ Handles global locations with enhanced US city/state support
 - ✅ Response time <3 seconds for all requests
 - ✅ Temperature unit conversion working (Fahrenheit/Celsius)
@@ -695,6 +697,7 @@ interface AppState {
 - ✅ Proper MCP protocol compliance
 - ✅ US state filtering precision validated
 - ✅ Weather advice recommendations functional
+- ✅ Weather alerts system operational for US locations
 
 ### 5.2 Testing Requirements  
 - ✅ Comprehensive automated testing framework implemented
@@ -947,14 +950,16 @@ interface AppState {
 ### A.4 Current Implementation Status
 
 **Completed Features:**
-- ✅ Core MCP server with 6 weather tools (including weather advice)
+- ✅ Core MCP server with 7 weather tools (including weather advice and alerts)
 - ✅ Open-Meteo API integration (weather + geocoding)
+- ✅ US National Weather Service API integration (weather alerts)
 - ✅ Temperature unit conversion (Fahrenheit/Celsius)
 - ✅ US city/state input support with state filtering
 - ✅ Comprehensive error handling
 - ✅ TypeScript implementation with proper types
 - ✅ GitHub repository structure
 - ✅ Weather advice recommendation engine (Issue #14)
+- ✅ Weather alerts system with NWS integration (Issue #15)
 
 **Phase 2 Completed (Testing & Validation):**
 - ✅ Comprehensive automated testing framework (75+ test fixtures)
@@ -974,9 +979,21 @@ interface AppState {
   - ✅ Integration with existing MCP tools architecture
   - ✅ Support for both Fahrenheit and Celsius units
 
+- ✅ **Issue #15: Weather Alerts System with NWS API Integration** - COMPLETED
+  - ✅ Integration with US National Weather Service (NWS) API
+  - ✅ Support for all severity levels (Extreme, Severe, Moderate, Minor)
+  - ✅ Complete alert information (headlines, descriptions, instructions)
+  - ✅ Proper date/time formatting for effective and expiration times
+  - ✅ Area descriptions and affected regions
+  - ✅ International location detection with helpful error messages
+  - ✅ US geographical bounds checking for alert availability
+  - ✅ Severity-based emoji indicators and color coding
+  - ✅ Formatted alert output with clear sections and separators
+  - ✅ Integration with existing geocoding system
+
 **Currently In Progress:**
-- ⏳ Phase 3: Advanced Features (1/4 complete)
+- ⏳ Phase 3: Advanced Features (2/4 complete)
   - ✅ Weather advice recommendations (Issue #14)
-  - ⏳ Weather alerts system (Issue #15)
+  - ✅ Weather alerts system (Issue #15)
   - ⏳ Enhanced error handling (Issue #16)
   - ⏳ Performance optimizations (Issue #17)

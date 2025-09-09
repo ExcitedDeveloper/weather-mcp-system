@@ -103,4 +103,15 @@ export const TOOL_SCHEMAS: Tool[] = [
       required: ['location'],
     },
   },
+  {
+    name: 'get_weather_alerts',
+    description: 'Get active weather alerts, warnings, and advisories for a US location',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        ...locationProperty,
+      },
+      required: ['location'],
+    },
+  },
 ]

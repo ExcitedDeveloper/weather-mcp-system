@@ -22,7 +22,7 @@ describe('Basic MCP Server Integration', () => {
     
     expect(tools).toBeDefined()
     expect(Array.isArray(tools)).toBe(true)
-    expect(tools.length).toBe(5)
+    expect(tools.length).toBe(7)
     
     const toolNames = tools.map(tool => tool.name)
     expect(toolNames).toContain('get_current_weather')
@@ -30,6 +30,8 @@ describe('Basic MCP Server Integration', () => {
     expect(toolNames).toContain('get_current_weather_by_location')
     expect(toolNames).toContain('get_weather_forecast_by_location')
     expect(toolNames).toContain('search_locations')
+    expect(toolNames).toContain('get_weather_advice')
+    expect(toolNames).toContain('get_weather_alerts')
   })
 
   test('should execute search_locations tool successfully', async () => {

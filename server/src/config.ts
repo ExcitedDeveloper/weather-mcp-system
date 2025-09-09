@@ -11,6 +11,13 @@ export const API_CONFIG = {
       SEARCH: '/search',
     },
   },
+  NWS: {
+    BASE_URL: 'https://api.weather.gov',
+    ENDPOINTS: {
+      ALERTS: '/alerts',
+      ACTIVE_ALERTS: '/alerts/active',
+    },
+  },
 } as const
 
 export const REQUEST_CONFIG = {
@@ -19,6 +26,10 @@ export const REQUEST_CONFIG = {
   DEFAULT_HEADERS: {
     'User-Agent': 'weather-mcp-server/1.0',
     'Accept': 'application/json',
+  },
+  NWS_HEADERS: {
+    'User-Agent': 'weather-mcp-server/1.0 (https://github.com/your-org/weather-mcp-system)',
+    'Accept': 'application/ld+json',
   },
 } as const
 

@@ -32,7 +32,11 @@
       "WebFetch(domain:github.com)",
       "Bash(npm test:*)",
       "Bash(npx @modelcontextprotocol/inspector:*)",
-      "Bash(DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector --port 6280 node dist/index.js)"
+      "Bash(DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector --port 6280 node dist/index.js)",
+      "WebFetch(domain:api.weather.gov)",
+      "Bash(taskkill:*)",
+      "Bash(pkill:*)",
+      "Bash(DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector --port 6281 node dist/index.js)"
     ],
     "deny": [],
     "ask": []

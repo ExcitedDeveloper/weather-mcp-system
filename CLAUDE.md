@@ -53,6 +53,7 @@ npx @modelcontextprotocol/inspector node dist/index.js
 - **`config.ts`**: API endpoints, constants, and configuration
 - **`types.ts`**: TypeScript interface definitions
 - **`utils.ts`**: Temperature conversion utilities (Fahrenheit/Celsius)
+- **`alerts.ts`**: Weather alerts and warnings integration with NWS API
 
 ### Core MCP Tools
 
@@ -61,6 +62,8 @@ npx @modelcontextprotocol/inspector node dist/index.js
 3. `get_current_weather_by_location` - Weather by location name or coordinates
 4. `get_weather_forecast_by_location` - 3-day forecast by location name or coordinates
 5. `search_locations` - Geocoding and location search
+6. `get_weather_advice` - Weather-based clothing and activity recommendations
+7. `get_weather_alerts` - Active weather alerts and warnings (US only)
 
 ### Key Features
 
@@ -75,7 +78,7 @@ npx @modelcontextprotocol/inspector node dist/index.js
 - **Runtime**: Node.js 18+
 - **Language**: TypeScript with ES2022 target
 - **Protocol**: Model Context Protocol (MCP) via `@modelcontextprotocol/sdk`
-- **APIs**: Open-Meteo weather and geocoding (free, no authentication)
+- **APIs**: Open-Meteo weather and geocoding (free, no authentication), NWS weather alerts (US only, free)
 - **Transport**: STDIO (for MCP clients like Claude Desktop)
 
 ## Development Workflow

@@ -6,11 +6,14 @@ import {
   handleGetCurrentWeatherByLocation,
   handleGetWeatherForecastByLocation,
   handleSearchLocations,
+  handleGetWeatherAlerts,
 } from '../../src/tools/index.js'
 import {
   mockWeatherResponse,
   mockGeocodingResponse,
   mockEmptyGeocodingResponse,
+  mockNWSAlertsWithWarnings,
+  mockNWSAlertsEmpty,
 } from '../__mocks__/api-responses.js'
 
 // Mock the apiClient module
@@ -263,6 +266,70 @@ describe('tools integration', () => {
       })
 
       expect(result.content[0].text).toContain('Current Weather Report')
+    })
+  })
+
+  describe('weather alerts integration', () => {
+    // Mock geocoding for alerts tests
+    vi.mock('../../src/geocoding.js', () => ({
+      parseLocationInput: vi.fn(),
+    }))
+
+    beforeEach(async () => {
+      const { parseLocationInput } = await import('../../src/geocoding.js')
+      const mockParseLocationInput = vi.mocked(parseLocationInput)
+      mockParseLocationInput.mockResolvedValue({
+        latitude: 25.7617,
+        longitude: -80.1918,
+        locationName: 'Miami, FL'
+      })
+    })
+
+    describe('handleGetWeatherAlerts', () => {
+      it('handles active alerts and returns formatted output', async () => {
+        mockApiClient.get.mockResolvedValueOnce(mockNWSAlertsWithWarnings)
+
+        const result = await handleGetWeatherAlerts({
+          location: 'Miami, FL',
+        })
+
+        expect(result.content).toHaveLength(1)
+        expect(result.content[0].type).toBe('text')
+        expect(result.content[0].text).toContain('🚨 **ACTIVE WEATHER ALERTS**')
+        expect(result.content[0].text).toContain('📍 Location: Miami, FL')
+        expect(result.content[0].text).toContain('📊 Active Alerts: 2')
+        expect(result.content[0].text).toContain('SEVERE THUNDERSTORM WARNING')
+        expect(result.content[0].text).toContain('RIP CURRENT STATEMENT')
+      })
+
+      it('handles no active alerts', async () => {
+        mockApiClient.get.mockResolvedValueOnce(mockNWSAlertsEmpty)
+
+        const result = await handleGetWeatherAlerts({
+          location: 'New York, NY',
+        })
+
+        expect(result.content[0].text).toContain('✅ **No Active Weather Alerts**')
+        expect(result.content[0].text).toContain('No weather alerts, warnings, or advisories are currently in effect')
+      })
+
+      it('handles coordinate input format', async () => {
+        mockApiClient.get.mockResolvedValueOnce(mockNWSAlertsEmpty)
+
+        const result = await handleGetWeatherAlerts({
+          location: '25.7617,-80.1918',
+        })
+
+        expect(result.content[0].type).toBe('text')
+        expect(mockApiClient.get).toHaveBeenCalledWith(
+          expect.stringContaining('point=25.7617,-80.1918'),
+          expect.objectContaining({
+            headers: expect.objectContaining({
+              'Accept': 'application/ld+json'
+            })
+          })
+        )
+      })
     })
   })
 })

@@ -84,3 +84,79 @@ export interface ApiRequestOptions {
   headers?: Record<string, string>
   timeout?: number
 }
+
+export type AlertSeverity = 'Minor' | 'Moderate' | 'Severe' | 'Extreme'
+export type AlertUrgency = 'Immediate' | 'Expected' | 'Future' | 'Past'
+export type AlertCertainty = 'Observed' | 'Likely' | 'Possible' | 'Unlikely' | 'Unknown'
+
+export interface WeatherAlert {
+  id: string
+  title: string
+  description: string
+  event: string
+  severity: AlertSeverity
+  urgency: AlertUrgency
+  certainty: AlertCertainty
+  headline?: string
+  areaDesc: string
+  effective: string
+  expires: string
+  sent: string
+  instruction?: string
+  response?: string
+  category: string
+  senderName?: string
+}
+
+export interface NWSAlertFeature {
+  id: string
+  type: 'Feature'
+  geometry: {
+    type: string
+    coordinates?: number[][][]
+  } | null
+  properties: {
+    '@id': string
+    '@type': string
+    id: string
+    areaDesc: string
+    geocode: {
+      SAME: string[]
+      UGC: string[]
+    }
+    affectedZones: string[]
+    references: Array<{
+      '@id': string
+      identifier: string
+      sender: string
+      sent: string
+    }>
+    sent: string
+    effective: string
+    onset: string
+    expires: string
+    ends: string
+    status: string
+    messageType: string
+    category: string
+    severity: AlertSeverity
+    certainty: AlertCertainty
+    urgency: AlertUrgency
+    event: string
+    sender: string
+    senderName: string
+    headline: string
+    description: string
+    instruction: string
+    response: string
+    parameters: Record<string, any>
+  }
+}
+
+export interface NWSAlertsResponse {
+  '@context': any
+  type: 'FeatureCollection'
+  features: NWSAlertFeature[]
+  title: string
+  updated: string
+}

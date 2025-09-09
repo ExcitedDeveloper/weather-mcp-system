@@ -8,6 +8,7 @@ import {
 } from '../weather.js'
 import { searchLocations, formatSearchResults } from '../geocoding.js'
 import { generateWeatherAdvice } from '../advice.js'
+import { getWeatherAlerts } from '../alerts.js'
 import { type ToolInput } from '../types.js'
 
 export async function handleGetCurrentWeather(args: ToolInput): Promise<CallToolResult> {
@@ -76,6 +77,16 @@ export async function handleGetWeatherAdvice(args: ToolInput): Promise<CallToolR
   }
 }
 
+export async function handleGetWeatherAlerts(args: ToolInput): Promise<CallToolResult> {
+  const location = validateLocation(args.location)
+
+  const alerts = await getWeatherAlerts(location)
+  
+  return {
+    content: [{ type: 'text', text: alerts }],
+  }
+}
+
 export const TOOL_HANDLERS = {
   get_current_weather: handleGetCurrentWeather,
   get_weather_forecast: handleGetWeatherForecast,
@@ -83,6 +94,7 @@ export const TOOL_HANDLERS = {
   get_weather_forecast_by_location: handleGetWeatherForecastByLocation,
   search_locations: handleSearchLocations,
   get_weather_advice: handleGetWeatherAdvice,
+  get_weather_alerts: handleGetWeatherAlerts,
 } as const
 
 export type ToolName = keyof typeof TOOL_HANDLERS
